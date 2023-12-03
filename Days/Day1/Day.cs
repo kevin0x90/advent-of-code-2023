@@ -1,4 +1,6 @@
-﻿public class Day
+﻿namespace Days.Day1;
+
+public class Day
 {
 
   delegate bool GetDigitDelegate(ReadOnlySpan<char> input, int sliceStart, int sliceLength, out int digit);
