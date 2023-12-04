@@ -1,4 +1,4 @@
-using Days.Day1;
+using Day1;
 using FluentAssertions;
 
 namespace Day1Test
