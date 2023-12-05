@@ -12,8 +12,10 @@ public partial class Day
   {
     var input = ReadInput("Input.txt");
     var result1 = Solve1(input);
+    var result2 = Solve2(input);
 
     Console.WriteLine(result1);
+    Console.WriteLine(result2);
   }
 
   private static IEnumerable<string> ReadInput(string filename)
@@ -28,6 +30,15 @@ public partial class Day
       .Where(result => result.isPossible)
       .Select(result => result.GameId)
       .Sum(gameId => gameId);
+  }
+
+  public static uint Solve2(IEnumerable<string> lines)
+  {
+    return (uint)lines
+      .Select(line => GameIdWithSetsRegex().Matches(line))
+      .Select(CreateGamesFromMatches)
+      .Select(GameSetMinimumCubesPower)
+      .Sum(cubesPower => cubesPower);
   }
 
   private static (uint GameId, bool isPossible) IsGameSetPossible(IEnumerable<Game> games)
@@ -45,18 +56,34 @@ public partial class Day
     return (gameId, true);
   }
 
+  private static uint GameSetMinimumCubesPower(IEnumerable<Game> games)
+  {
+    uint maxRed = 0u;
+    uint maxGreen = 0u;
+    uint maxBlue = 0u;
+
+    foreach (var game in games)
+    {
+      maxRed = Math.Max(maxRed, game.RedCount);
+      maxGreen = Math.Max(maxGreen, game.GreenCount);
+      maxBlue = Math.Max(maxBlue, game.BlueCount);
+    }
+
+    return maxRed * maxGreen * maxBlue;
+  }
+
   private static IEnumerable<Game> CreateGamesFromMatches(MatchCollection matches)
   {
     foreach (Match match in matches)
     {
       uint gameId = match.Groups["GameId"].Captures.Select(c => uint.Parse(c.Value)).First();
 
-      foreach (Match setEntryMatch in SetEntryNumbersRegex().Matches(match.Groups["set"].Value))
+      foreach (Match setEntryMatch in SetEntryNumbersRegex().Matches(match.Groups["Set"].Value))
       {
         yield return new Game(gameId,
-          GetSetEntryBallGroupCount(setEntryMatch, "red"),
-          GetSetEntryBallGroupCount(setEntryMatch, "blue"),
-          GetSetEntryBallGroupCount(setEntryMatch, "green")
+          GetSetEntryBallGroupCount(setEntryMatch, "Red"),
+          GetSetEntryBallGroupCount(setEntryMatch, "Blue"),
+          GetSetEntryBallGroupCount(setEntryMatch, "Green")
         );
       }
     }
@@ -74,10 +101,10 @@ public partial class Day
     return 0u;
   }
 
-  [GeneratedRegex(@"^Game\s(?<GameId>\d+):(?<set>.+)")]
+  [GeneratedRegex(@"^Game\s(?<GameId>\d+):(?<Set>.+)")]
   private static partial Regex GameIdWithSetsRegex();
 
-  [GeneratedRegex(@"(?<set>(\s(((?<blue>\d+)\sblue)|((?<red>\d+)\sred)|((?<green>\d+)\sgreen))[,]?)+)")]
+  [GeneratedRegex(@"(?<Set>(\s(((?<Blue>\d+)\sblue)|((?<Red>\d+)\sred)|((?<Green>\d+)\sgreen))[,]?)+)")]
   private static partial Regex SetEntryNumbersRegex();
 
 }
