@@ -4,17 +4,18 @@ namespace Day2;
 
 public partial class Day
 {
-  private static uint maxRed = 12;
-  private static uint maxGreen = 13;
-  private static uint maxBlue = 14;
+  private static uint maxRed = 12u;
+  private static uint maxGreen = 13u;
+  private static uint maxBlue = 14u;
 
   public static void Main(string[] args)
   {
     var input = ReadInput("Input.txt");
-    var result1 = Solve1(input);
-    var result2 = Solve2(input);
 
+    var result1 = Solve1(input);
     Console.WriteLine(result1);
+
+    var result2 = Solve2(input);
     Console.WriteLine(result2);
   }
 
@@ -22,28 +23,25 @@ public partial class Day
         => File.ReadLines(filename);
 
   public static uint Solve1(IEnumerable<string> lines)
-  {
-    return (uint)lines
+    => (uint)lines
       .Select(line => GameIdWithSetsRegex().Matches(line))
       .Select(CreateGamesFromMatches)
       .Select(IsGameSetPossible)
-      .Where(result => result.isPossible)
+      .Where(result => result.IsPossible)
       .Select(result => result.GameId)
       .Sum(gameId => gameId);
-  }
+
 
   public static uint Solve2(IEnumerable<string> lines)
-  {
-    return (uint)lines
+    => (uint)lines
       .Select(line => GameIdWithSetsRegex().Matches(line))
       .Select(CreateGamesFromMatches)
       .Select(GameSetMinimumCubesPower)
       .Sum(cubesPower => cubesPower);
-  }
 
-  private static (uint GameId, bool isPossible) IsGameSetPossible(IEnumerable<Game> games)
+  private static (uint GameId, bool IsPossible) IsGameSetPossible(IEnumerable<Game> games)
   {
-    uint gameId = 0;
+    uint gameId = 0u;
     foreach (var game in games)
     {
       gameId = game.Id;
